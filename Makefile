@@ -1,13 +1,15 @@
-all: memgrind.c mymalloc.o
-	gcc memgrind.c mymalloc.o
+all: memgrind.o mymalloc.o
+	gcc memgrind.o mymalloc.o -o memgrind
 
-mymalloc.o: mymalloc.c
+run: memgrind.o mymalloc.o
+	gcc memgrind.o mymalloc.o -o memgrind
+	./memgrind
+
+mymalloc.o: mymalloc.c mymalloc.h
 	gcc -c mymalloc.c
 
-t: a.out
-	./a.out
+memgrind.o: memgrind.c mymalloc.h
+	gcc -c memgrind.c
 
-clean: a.out mymalloc.o
-	rm a.out
-	rm mymalloc.o
-	
+clean:
+	rm -f memgrind *.o

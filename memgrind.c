@@ -26,19 +26,19 @@ int main(int argc, char * argv[]){
 		printf("B: Free 1 byte 120 times.\n");
 		for(i=0; i < 120; i++){
 			free(testB[i]);
-			printf("Test B Freed: %d\n", i);
+			//printf("Test B Freed: %d\n", i);
 		}
 		
 		
 		
 		//Test C: randomly malloc or free 1 byte until 120 mallocs called and they have all been freed
 		printf("C: Randomly malloc or free 120 times each.\n");
-		
+		/*
 		int mallocCount = 0;
 		int mallocLeft = 0;
 		int freeCount = 0;
 		while(mallocCount < 120){
-			coin = rand();
+			int coin = rand();
 			
 			if(coin%2 == 0){
 				mallocCount++;
@@ -47,7 +47,7 @@ int main(int argc, char * argv[]){
 				testB[mallocCount] = malloc(sizeof(char));
 				
 			} else if(mallocLeft > 0){
-				free(testB[freeCount]
+				free(testB[freeCount]);
 				
 				mallocLeft--;
 				freeCount++;
@@ -55,9 +55,9 @@ int main(int argc, char * argv[]){
 			}
 		}
 		while(freeCount < 120){
-			free(testB[freeCount]
+			free(testB[freeCount]);
 			
-		}
+		}*/
 		
 		printf("D: Randomly malloc a random size or free 120 times each.\n");
 		for(i=0; i < 100; i++){
@@ -71,7 +71,7 @@ int main(int argc, char * argv[]){
 		
 		
 		//Custom test E: calling malloc on a space and splitting one half into further halves each time, then freeing every malloc call before calling malloc for entire size of usable memory
-		printf("\nE: Mallocing and freeing into increasingly smaller spaces.\n");
+		printf("E: Mallocing and freeing into increasingly smaller spaces.\n");
 		
 		testB[0] = (char*)malloc(sizeof(char)*4089);
 		free(testB[0]);
@@ -113,11 +113,13 @@ int main(int argc, char * argv[]){
 		
 		for(i = 0; i < 10; i++){
 			free(testB[i]);
-			printf("Test B Freed: %d\n", i);
+			//printf("Test B Freed: %d\n", i);
 		}
 		
 		testB[0] = (char*)malloc(sizeof(char)*4089);
 		free(testB[0]);
+		
+		printf("Loop done.\n\n");
 	}
 	
 	return 0;

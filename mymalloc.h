@@ -5,14 +5,14 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define malloc(x) mymalloc(x)
-#define free(x) myfree(x)
+#define malloc(x) mymalloc(x, __FILE__, __LINE__)
+#define free(x) myfree(x, __FILE__, __LINE__)
 
-static char blockSim[4096];
+static char memory[4096];
 static unsigned int magic = 4242424242;
 
-void * mymalloc(int x);
-void myfree(void * x);
+void * mymalloc(int x, char * file, int line);
+void myfree(void * x, char * file, int line);
 
 #endif
 
