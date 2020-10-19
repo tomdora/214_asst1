@@ -23,12 +23,11 @@ int main(int argc, char * argv[]){
 		
 		
 		//Test B: malloc 1 byte 120 times, then free all of the mallocs
-		printf("B: Malloc 1 byte 120 times.\n");
+		printf("B: Malloc, then free, 1 byte 120 times.\n");
 		
 		for(i=0; i < 120; i++){
 			testArray[i] = (char*)malloc(sizeof(char));
 		}
-		printf("B: Free 1 byte 120 times.\n");
 		for(i=0; i < 120; i++){
 			free(testArray[i]);
 			//printf("Test B Freed: %d\n", i);
@@ -45,6 +44,7 @@ int main(int argc, char * argv[]){
 		while(mallocCount < 120){
 			int coin = rand();
 			
+			//Flips a "coin"; if the number is divided by 2 and has no remainder, it's heads and mallocs
 			if(coin%2 == 0){
 				//printf("Heads; Count: %d; Left: %d; Free: %d\n", mallocCount, mallocLeft, freeCount);
 				
@@ -53,7 +53,7 @@ int main(int argc, char * argv[]){
 				mallocCount++;
 				mallocLeft++;
 				
-			} else if(mallocLeft > 0){
+			} else if(mallocLeft > 0){		//Else if there are existing mallocs to be freed, the mallocs are freed
 				//printf("Tails; Count: %d; Left: %d; Free: %d\n", mallocCount, mallocLeft, freeCount);
 				
 				free(testArray[freeCount]);
@@ -61,7 +61,7 @@ int main(int argc, char * argv[]){
 				mallocLeft--;
 				freeCount++;
 				
-			} else{
+			} else{						//Else there aren't currently any mallocs to be freed.
 				//printf("Tails.\n");
 			}
 		}
@@ -72,27 +72,33 @@ int main(int argc, char * argv[]){
 		
 		
 		
-		//Custom test D: error testing.
+		//Custom test D: error testing. Most of these should return with errors to a file and line.
 		printf("D: Error testing.\n");
 		
+		//Checks if something that wasn't malloc'd can be freed
 		free((int*)j);
 		
+		//Check for freeing past the beginning of a pointer.
 		char * caseB = malloc(200);
 		free(caseB + 10);
 		free(caseB);
 		
+		//Check for freeing something that wasn't malloc'd at all
 		int * caseB2;
 		free(caseB2);
 		
+		//Check for malloc-ing too many bytes for the array
 		testArray[0] = malloc(2000);
 		testArray[1] = malloc(2000);
 		testArray[2] = malloc(2000);
 		
+		//Check for freeing redundant and null pointers
 		free(testArray[0]);
 		free(testArray[0]);
 		free(testArray[1]);
 		free(testArray[2]);
 		
+		//Check repeatedly mallocing 400B chunks, with the last one beeing too large for the space left, and then free them all
 		for(i = 0; i < 11; i++){
 			testArray[i] = malloc(400);
 		}
@@ -100,6 +106,7 @@ int main(int argc, char * argv[]){
 			free(testArray[i]);
 		}
 		
+		//Test for malloc-ing too many bytes, and then the largest possible + malloc one more byte on top of that, then free
 		testArray[0] = malloc(5000);
 		testArray[0] = malloc(4089);
 		testArray[1] = malloc(1);

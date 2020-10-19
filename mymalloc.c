@@ -162,6 +162,7 @@ static void * allocateMem(size_t x, char * file, int line){
 			return NULL;
 		}
 	}
+	return NULL;
 }
 
 

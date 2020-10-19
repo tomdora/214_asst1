@@ -1,0 +1,12 @@
+Thomas Fiorilla : trf40
+
+Custom case D:
+	For this test case, I intentionally tested a variety of errors to make sure that they would 1) not work, as they shouldn't, and 2) leave the memory intact for the following test cases.
+	First off, I try to case a non-malloc'd variable as a pointer and free it. Next, I try freeing various incorrect pointers, and try a few times to assign memory greater than the size of the array. 
+		The important part to this custom case was making sure that errors were printed alongside file names and line numbers, and that subsequent calls to malloc still worked regardless of what errors popped up.
+	
+Custom case E:
+	Test case E was a test on free() coalescing properly. First, I assigned the largest size my malloc can assign, freed it, and malloc'd two blocks half the size.
+	I kept this pattern with the first of each two blocks until I've assigned the smallest possible blocks; if visualised, my memory should have each block double in size from left to right.
+	I then free every single malloc call and malloc the largest size possible once again.
+		If the coalescing didn't work at any point, the test would immediately fail, especially when I free every block at the end. Because the test works, I know my free spaces coalesce together into one empty block.
