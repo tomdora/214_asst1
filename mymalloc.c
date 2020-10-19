@@ -95,7 +95,7 @@ static void * allocateMem(size_t x, char * file, int line){
 			
 			//if the currentLoc goes out of bounds
 			if(currentLoc >= sizeof(memory) - 1 - sizeofMeta){
-				printf("\n	You have no space left!\n");
+				printf("	You have no space left!\n");
 				return NULL;
 			}
 			
@@ -178,7 +178,7 @@ void * mymalloc(size_t x, char * file, int line){
 	//If user inputs a number that cannot possibly fit in the space, or is less than 1
     //It is considered too large if it is larger than the size of all the memory, minus the size of the initial magic block, minus the size of the metadata
 	if(x > sizeof(memory) - sizeofMagic - sizeofMeta - 1){
-		printf("That is larger than the possible space error file %s line %d.\n", file, line);
+		printf("	That is larger than the possible space error file %s line %d.\n", file, line);
 		return NULL;
 	}
 	
@@ -218,8 +218,15 @@ void myfree(void * x, char * file, int line){
 	
 	//printf("Running free. Address of the value: %d\n", x);
 	
+	//Check if user is calling free on a NULL address
+	if(x == NULL){
+		printf("	Null pointer, cannot be freed.\n");
+		
+		return;
+	}
+	
 	//check to see if the address is before or after the limits
-	if(x < &(memory) || x >= &(memory[sizeof(memory)])){
+	else if(x < (void*)(memory + sizeofMagic) || x >= (void*)(memory + sizeof(memory) - 1)){
 		printf("	Out of bounds error file %s line %d.\n", file, line);
 		
 		return;
@@ -249,7 +256,7 @@ void myfree(void * x, char * file, int line){
 			}
 			
 			//if the currentLoc's address is lower than the user-given address, iterate to the next currentLoc and save the previous currentLoc
-			else if(x > &(memory[currentLoc + 1 + sizeofMeta])){
+			else if(x > (void*)(memory + currentLoc + 1 + sizeofMeta)){
 				//printf("	Iterating the array.\n");
 				
 				prevLoc = currentLoc;
@@ -331,7 +338,7 @@ void myfree(void * x, char * file, int line){
 			}
 			
 			//if the currentLoc's address is larger than what the user asked for, user is not pointing to the beginning of a currentLoc
-			else if(x < &(memory[currentLoc + 1 + sizeofMeta])){
+			else if(x < (void*)(memory + currentLoc + 1 + sizeofMeta)){
 				printf("	Address given to free is not the start of the block error file %s line %d.\n", file, line);
 				
 				return;
