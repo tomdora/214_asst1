@@ -7,22 +7,33 @@ int main(int argc, char * argv[]){
 	int i = 0;
 	int j = 0;
 	char * testArray[120];
-	double timeTest[50];
 	
+	//Initialise timeval structs for total runtime, variables for keeping track of average workload times
+	struct timeval start;
+	struct timeval end;
+	double totalTime, loopTime, timeA, timeB, timeC, timeD, timeE;
+	
+	gettimeofday(&start, NULL);
+	
+	//Start looping all five workloads to 50 total times run, keeping track of each workload time and loop time
 	for(j = 0; j < 50; j++){
-		struct timeval start, end;
-		gettimeofday(&start, NULL);
+		struct timeval loopStart, startA, startB, startC, startD, startE;
+		struct timeval loopEnd, endA, endB, endC, endD, endE;
+		gettimeofday(&loopStart, NULL);
 		
 		//Test A: malloc 1 and immediately free one byte 120 times
+		gettimeofday(&startA, NULL);
 		printf("A: Malloc and free 1 byte 120 times.\n");
 		for(i=0; i < 120; i++){
 			testPointer = malloc(1);
 			free(testPointer);
 		}
+		gettimeofday(&endA, NULL);
 		
 		
 		
 		//Test B: malloc 1 byte 120 times, then free all of the mallocs
+		gettimeofday(&startB, NULL);
 		printf("B: Malloc, then free, 1 byte 120 times.\n");
 		
 		for(i=0; i < 120; i++){
@@ -32,10 +43,12 @@ int main(int argc, char * argv[]){
 			free(testArray[i]);
 			//printf("Test B Freed: %d\n", i);
 		}
+		gettimeofday(&endB, NULL);
 		
 		
 		
 		//Test C: randomly malloc or free 1 byte until 120 mallocs called and they have all been freed
+		gettimeofday(&startC, NULL);
 		printf("C: Randomly malloc or free 120 times each.\n");
 		
 		int mallocCount = 0;
@@ -64,15 +77,17 @@ int main(int argc, char * argv[]){
 			} else{						//Else there aren't currently any mallocs to be freed.
 				//printf("Tails.\n");
 			}
-		}
+		}	//free the remaining mallocs
 		while(freeCount < 120){
 			free(testArray[freeCount]);
 			freeCount++;
 		}
+		gettimeofday(&endC, NULL);
 		
 		
 		
 		//Custom test D: error testing. Most of these should return with errors to a file and line.
+		gettimeofday(&startD, NULL);
 		printf("D: Error testing.\n");
 		
 		//Checks if something that wasn't malloc'd can be freed
@@ -113,10 +128,12 @@ int main(int argc, char * argv[]){
 		
 		free(testArray[0]);
 		free(testArray[1]);
+		gettimeofday(&endD, NULL);
 		
 		
 		
 		//Custom test E: calling malloc on a space and splitting one half into further halves each time, then freeing every malloc call before calling malloc for entire size of usable memory
+		gettimeofday(&startE, NULL);
 		printf("E: Mallocing and freeing into increasingly smaller spaces.\n");
 		
 		testArray[0] = (char*)malloc(4089);
@@ -163,20 +180,38 @@ int main(int argc, char * argv[]){
 		
 		testArray[0] = (char*)malloc(sizeof(char)*4089);
 		free(testArray[0]);
+		gettimeofday(&endE, NULL);
 		
-		gettimeofday(&end, NULL);
+		gettimeofday(&loopEnd, NULL);
 		
-		timeTest[j] = ((end.tv_sec - start.tv_sec) * 1000.0) + ((end.tv_usec - start.tv_usec) / 1000.0);
+		//If this is the first loop, times are simply set and not averaged, since there's not enough data
+		if(j == 0){
+			timeA = ((endA.tv_sec - startA.tv_sec) * 1000.0) + ((endA.tv_usec - startA.tv_usec) / 1000.0);
+			timeB = ((endB.tv_sec - startB.tv_sec) * 1000.0) + ((endB.tv_usec - startB.tv_usec) / 1000.0);
+			timeC = ((endC.tv_sec - startC.tv_sec) * 1000.0) + ((endC.tv_usec - startC.tv_usec) / 1000.0);
+			timeD = ((endD.tv_sec - startD.tv_sec) * 1000.0) + ((endD.tv_usec - startD.tv_usec) / 1000.0);
+			timeE = ((endE.tv_sec - startE.tv_sec) * 1000.0) + ((endE.tv_usec - startE.tv_usec) / 1000.0);
+			loopTime = ((loopEnd.tv_sec - loopStart.tv_sec) * 1000.0) + ((loopEnd.tv_usec - loopStart.tv_usec) / 1000.0);
+			
+		} else{	//else this isn't the first loop and we have enough data to create an average
+			timeA += (((endA.tv_sec - startA.tv_sec) * 1000.0) + ((endA.tv_usec - startA.tv_usec) / 1000.0)) / 2;
+			timeB += (((endB.tv_sec - startB.tv_sec) * 1000.0) + ((endB.tv_usec - startB.tv_usec) / 1000.0)) / 2;
+			timeC += (((endC.tv_sec - startC.tv_sec) * 1000.0) + ((endC.tv_usec - startC.tv_usec) / 1000.0)) / 2;
+			timeD += (((endD.tv_sec - startD.tv_sec) * 1000.0) + ((endD.tv_usec - startD.tv_usec) / 1000.0)) / 2;
+			timeE += (((endE.tv_sec - startE.tv_sec) * 1000.0) + ((endE.tv_usec - startE.tv_usec) / 1000.0)) / 2;
+			loopTime += (((loopEnd.tv_sec - loopStart.tv_sec) * 1000.0) + ((loopEnd.tv_usec - loopStart.tv_usec) / 1000.0)) / 2;
+		}
 		
-		printf("Loop done : %gms\n\n", timeTest[j]);
+		printf("Loop done : %gms\n\n", loopTime);
 	}
 	
-	double runTime = 0;
-	for(i = 0; i < 50; i++){
-		runTime += timeTest[i];
-	}
+	gettimeofday(&end, NULL);
 	
-	printf("Memgrind complete. Total runtime: %gms; Average runtime: %gms\n\n", runTime, runTime/50);
+	//Get total runtime and print all the runtimes to the console
+	totalTime = ((end.tv_sec - start.tv_sec) * 1000.0) + ((end.tv_usec - start.tv_usec) / 1000.0);
+	
+	printf("Memgrind complete. Total runtime: %gms; Average loop runtime: %gms\n", totalTime, loopTime);
+	printf("Average runtime per workload:\nA: %gms\nB: %gms\nC: %gms\nD: %gms\nE: %gms\n\n", timeA, timeB, timeC, timeD, timeE);
 	
 	//printf("Memgrind complete.\n\n");
 	
