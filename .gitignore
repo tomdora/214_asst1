@@ -1,4 +1,5 @@
 memgrind
+*.gz
 
 # Prerequisites
 *.d

@@ -1,6 +1,6 @@
 //Thomas Fiorilla : trf40
 #include "mymalloc.h"
-#include <time.h>
+#include <sys/time.h>
 
 int main(int argc, char * argv[]){
 	char * testPointer;
@@ -10,8 +10,8 @@ int main(int argc, char * argv[]){
 	double timeTest[50];
 	
 	for(j = 0; j < 50; j++){
-		clock_t start, end;
-		start = clock();
+		struct timeval start, end;
+		gettimeofday(&start, NULL);
 		
 		//Test A: malloc 1 and immediately free one byte 120 times
 		printf("A: Malloc and free 1 byte 120 times.\n");
@@ -164,9 +164,9 @@ int main(int argc, char * argv[]){
 		testArray[0] = (char*)malloc(sizeof(char)*4089);
 		free(testArray[0]);
 		
-		end = clock();
+		gettimeofday(&end, NULL);
 		
-		timeTest[j] = ((double) (end - start)) / CLOCKS_PER_SEC * 1000;
+		timeTest[j] = ((end.tv_sec - start.tv_sec) * 1000.0) + ((end.tv_usec - start.tv_usec) / 1000.0);
 		
 		printf("Loop done : %gms\n\n", timeTest[j]);
 	}
